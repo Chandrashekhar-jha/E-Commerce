@@ -1,33 +1,68 @@
-const user = require('../model/user');
-const  User = require('../models/User');
+const User = require('../model/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../utils/sendMail');
 
 const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-}
+    return jwt.sign(
+        { id },
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' }
+    );
+};
 
+// Register User
 const registerUser = async (req, res) => {
+
     const { name, email, password } = req.body;
 
     try {
+
+        // Check existing user
         const existingUser = await User.findOne({ email });
+
         if (existingUser) {
-            return res.status(400).json({ message: 'User already exists' });
+            return res.status(400).json({
+                message: 'User already exists'
+            });
         }
-        
-        const salt = await bcrypt.gensalt(10);
+
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const User =  User.create({ name, email, password: hashedPassword });
-        if(user){
-            const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        // Create user
+        const user = await User.create({
+            name,
+            email,
+            password: hashedPassword
+        });
+
+        if (user) {
+
+            // Generate OTP
+            const otp = Math.floor(
+                100000 + Math.random() * 900000
+            ).toString();
+
+            // Save OTP
+            user.otp = otp;
+
+            await user.save();
+
+            // Email message
             const message = `Your OTP for registration is: ${otp}`;
 
-            await sendEmail(email, 'Welcome to ShopNest - OTP Verification', message);
+            // Send email
+            await sendEmail(
+                email,
+                'Welcome to ShopNest - OTP Verification',
+                message
+            );
 
-            res.status(201).json({ 
+            // Response
+            res.status(201).json({
                 _id: user._id,
                 name: user.name,
                 email: user.email,
@@ -35,22 +70,40 @@ const registerUser = async (req, res) => {
                 token: generateToken(user._id)
             });
 
-        }
-        else{
-            res.status(400).json({ message: 'Invalid user data' });
-        }
-        
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
-    }       
-}
+        } else {
 
-const LoginUser = async (req,res) => {
-    const {email, password} = req.body;
+            res.status(400).json({
+                message: 'Invalid user data'
+            });
+
+        }
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.status(500).json({
+            message: 'Server error'
+        });
+
+    }
+
+};
+
+// Login User
+const LoginUser = async (req, res) => {
+
+    const { email, password } = req.body;
 
     try {
+
         const user = await User.findOne({ email });
-        if (user && (await bcrypt.compare(password, user.password))) {
+
+        if (
+            user &&
+            (await bcrypt.compare(password, user.password))
+        ) {
+
             res.json({
                 _id: user._id,
                 name: user.name,
@@ -58,22 +111,47 @@ const LoginUser = async (req,res) => {
                 role: user.role,
                 token: generateToken(user._id)
             });
+
         } else {
-            res.status(400).json({ message: 'Invalid email or password' });
+
+            res.status(400).json({
+                message: 'Invalid email or password'
+            });
+
         }
-} catch (error) {
-        res.status(500).json({ message: 'Server error' });
-    }  
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.status(500).json({
+            message: 'Server error'
+        });
+
+    }
 
 };
 
+// Get All Users
 const getUsers = async (req, res) => {
+
     try {
-        const users = await User.find({}).select('-password');
+
+        const users = await User.find({})
+            .select('-password');
+
         res.json(users);
+
     } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+
+        console.log(error);
+
+        res.status(500).json({
+            message: 'Server error'
+        });
+
     }
+
 };
 
 module.exports = {

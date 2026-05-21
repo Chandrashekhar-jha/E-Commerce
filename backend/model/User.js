@@ -21,7 +21,7 @@ const userSchema  = new mongoose.Schema({
         enum: ['user', 'admin'],
         default: 'user'
 },
-    verifyed: {
+    verified: {
         type: Boolean,
         default: false
     },

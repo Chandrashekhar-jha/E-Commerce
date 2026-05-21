@@ -1,0 +1,28 @@
+{
+  "name": "shopping",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "install": "cd backend && npm install && cd ../frontend && npm install",
+    "dev:server": "cd backend && npm run dev",
+    "dev:client": "cd frontend && npm start",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "build:server": "cd backend && npm run build",
+    "build:client": "cd frontend && npm run build",
+    "build": "npm run build:server && npm run build:client" 
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chandrashekhar-jha/E-Commerce.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Chandrashekhar-jha/E-Commerce/issues"
+  },
+  "homepage": "https://github.com/Chandrashekhar-jha/E-Commerce#readme",
+  "dependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
