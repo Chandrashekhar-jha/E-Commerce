@@ -1,11 +1,12 @@
 import React, { useContext } from "react";
+import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import '../styles/navbar.css';
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
-  const cartItems = [];
+  const cartItems = useSelector((state) => state.cart.cartItems);
   const navigate = useNavigate();
 
   const handleLogout = () => {
