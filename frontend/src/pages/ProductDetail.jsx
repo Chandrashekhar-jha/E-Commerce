@@ -4,10 +4,9 @@ import { useDispatch } from 'react-redux';
 import { addToCart } from '../redux/cartSlics';
 import ProductCard from '../components/ProductCard';
 import '../styles/global.css';
+import { fallbackProducts } from '../data/fallbackProducts';
 
 const PLACEHOLDER_IMAGE = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500"><rect width="100%" height="100%" fill="%2318181b"/><g transform="translate(210, 190) scale(1.5)" stroke="%23ff6f61" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a2 2 0 1 0 0 4 2 2 0 1 0 0-4zM60 21a2 2 0 1 0 0 4 2 2 0 1 0 0-4z"/><path d="M3 3h10l12 30h45l10-20H19"/></g><text x="50%" y="65%" dominant-baseline="middle" text-anchor="middle" fill="%23a1a1a1" font-family="sans-serif" font-weight="600" font-size="18">ShopNest</text></svg>`;
-
-import { fallbackProducts } from '../data/fallbackProducts';
 
 const ProductDetail = () => {
   const { id } = useParams();

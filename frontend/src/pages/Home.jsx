@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import '../styles/product.css';
-
-
 import { fallbackProducts } from '../data/fallbackProducts';
 
 const Home = () => {
