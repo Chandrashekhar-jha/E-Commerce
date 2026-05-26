@@ -4,6 +4,8 @@ import ProductCard from "../components/ProductCard";
 import '../styles/product.css';
 
 
+import { fallbackProducts } from '../data/fallbackProducts';
+
 const Home = () => {
     const location = useLocation();
     const isShopPage = location.pathname === "/shop";
@@ -18,14 +20,21 @@ const Home = () => {
         const fetchProducts = async () => {
             try {
                 const res = await fetch("/api/products");
+                if (!res.ok) throw new Error("API not ok");
                 const data = await res.json();
-                setProducts(data);
                 
-                // Get unique categories
-                const uniqueCategories = [...new Set(data.map(p => p.category).filter(Boolean))];
-                setCategories(uniqueCategories);
+                if (Array.isArray(data) && data.length > 0) {
+                    setProducts(data);
+                    const uniqueCategories = [...new Set(data.map(p => p.category).filter(Boolean))];
+                    setCategories(uniqueCategories);
+                } else {
+                    throw new Error("Empty products array");
+                }
             } catch (error) {
-                console.error("Error fetching products:", error);
+                console.error("Error fetching products, using fallback data:", error);
+                setProducts(fallbackProducts);
+                const uniqueCategories = [...new Set(fallbackProducts.map(p => p.category).filter(Boolean))];
+                setCategories(uniqueCategories);
             } finally {
                 setLoading(false);
             }

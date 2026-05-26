@@ -7,15 +7,19 @@ import '../styles/global.css';
 
 const PLACEHOLDER_IMAGE = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500"><rect width="100%" height="100%" fill="%2318181b"/><g transform="translate(210, 190) scale(1.5)" stroke="%23ff6f61" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a2 2 0 1 0 0 4 2 2 0 1 0 0-4zM60 21a2 2 0 1 0 0 4 2 2 0 1 0 0-4z"/><path d="M3 3h10l12 30h45l10-20H19"/></g><text x="50%" y="65%" dominant-baseline="middle" text-anchor="middle" fill="%23a1a1a1" font-family="sans-serif" font-weight="600" font-size="18">ShopNest</text></svg>`;
 
+import { fallbackProducts } from '../data/fallbackProducts';
+
 const ProductDetail = () => {
   const { id } = useParams();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [qty, setQty] = useState(1);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   // Scroll to top when product ID changes
   useEffect(() => {
@@ -27,35 +31,49 @@ const ProductDetail = () => {
     const fetchProduct = async () => {
       try {
         const res = await fetch(`/api/products/${id}`);
+        if (!res.ok) throw new Error("API not ok");
         const data = await res.json();
-        setProduct(data);
-        setQty(data?.stock > 0 ? 1 : 0);
+        
+        if (data && data._id) {
+           setProduct(data);
+           setQty(data?.stock > 0 ? 1 : 0);
+        } else {
+           throw new Error("Invalid data");
+        }
       } catch (error) {
-        console.error('Error fetching product:', error);
+        console.error('Error fetching product, checking fallback:', error);
+        const fallbackMatch = fallbackProducts.find(p => p._id === id || p.id === id);
+        if (fallbackMatch) {
+            setProduct(fallbackMatch);
+            setQty(fallbackMatch?.stock > 0 ? 1 : 0);
+        } else {
+            setError('Product not found.');
+        }
       } finally {
         setLoading(false);
       }
     };
-
-    if (id) {
-      fetchProduct();
-    }
+    fetchProduct();
   }, [id]);
 
   // Fetch related products after the product loads
   useEffect(() => {
     const fetchRelatedProducts = async () => {
-      if (!product?.category) return;
+      if (!product) return;
       try {
         const res = await fetch('/api/products');
+        if (!res.ok) throw new Error("API not ok");
         const data = await res.json();
-        // Filter by same category, excluding current product
-        const filtered = data.filter(
-          (p) => p.category === product.category && (p._id || p.id) !== (product._id || product.id)
-        );
-        setRelatedProducts(filtered.slice(0, 4));
+        
+        if (Array.isArray(data) && data.length > 0) {
+            const related = data.filter(p => p.category === product.category && p._id !== product._id);
+            setRelatedProducts(related.slice(0, 4));
+        } else {
+            throw new Error("Empty products array");
+        }
       } catch (error) {
-        console.error('Error fetching related products:', error);
+        const related = fallbackProducts.filter(p => p.category === product.category && p._id !== product._id);
+        setRelatedProducts(related.slice(0, 4));
       }
     };
     fetchRelatedProducts();
