@@ -116,10 +116,10 @@ const ProductDetail = () => {
     );
   }
 
-  if (!product) {
+  if (!product || error) {
     return (
       <div className="main-content not-found-state">
-        <p>Product not found.</p>
+        <p>{error || "Product not found."}</p>
         <button className="btn" onClick={() => navigate('/')}>Back to home</button>
       </div>
     );
