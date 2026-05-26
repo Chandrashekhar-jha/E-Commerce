@@ -90,21 +90,106 @@
     transform: translateY(-1px);
 }
 
+/* Hamburger Toggle Button Styles */
+.navbar-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 21px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1010;
+}
+
+.navbar-toggle .bar {
+    height: 3px;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animations for Hamburger to Cross */
+.navbar-toggle.open .bar:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+}
+
+.navbar-toggle.open .bar:nth-child(2) {
+    opacity: 0;
+}
+
+.navbar-toggle.open .bar:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+}
+
+/* Default Menu Styles for Laptop/Desktop */
+.navbar-menu {
+    display: block;
+}
+
 @media (max-width: 768px) {
     .navbar {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 10px 20px;
+        padding: 15px 24px;
+        position: relative;
+    }
+
+    .navbar-toggle {
+        display: flex;
+    }
+
+    .navbar-menu {
+        display: none;
+        width: 100%;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: #040404;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 20px 24px;
+        z-index: 999;
+        transition: all 0.3s ease;
+    }
+
+    .navbar-menu.active {
+        display: block;
+        animation: slideDown 0.3s ease forwards;
     }
 
     .navbar-links {
         flex-direction: column;
-        gap: 10px;
+        align-items: stretch;
+        gap: 16px;
+        width: 100%;
+    }
+
+    .navbar-links li {
         width: 100%;
     }
 
     .navbar-links a, .navbar-links span {
+        display: block;
+        padding: 8px 0;
         width: 100%;
         text-align: left;
+    }
+    
+    .btn-logout {
+        width: 100%;
+        text-align: center;
+        margin-top: 5px;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
@@ -8,9 +8,19 @@ const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const cartItems = useSelector((state) => state.cart.cartItems);
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const closeMenu = () => {
+    setIsOpen(false);
+  };
 
   const handleLogout = () => {
     logout();
+    closeMenu();
     navigate('/login');
   }
 
@@ -18,7 +28,7 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <Link to="/">
+        <Link to="/" onClick={closeMenu}>
           <img 
             src="/SHOP-NEsT.png" 
             alt="ShopNest Logo" 
@@ -28,25 +38,31 @@ const Navbar = () => {
         </Link>
       </div>
 
-      <div>
+      <button className={`navbar-toggle ${isOpen ? 'open' : ''}`} onClick={toggleMenu} aria-label="Toggle navigation">
+        <span className="bar"></span>
+        <span className="bar"></span>
+        <span className="bar"></span>
+      </button>
+
+      <div className={`navbar-menu ${isOpen ? 'active' : ''}`}>
         <ul className="navbar-links">
           <li>
-            <Link to="/shop">Shop</Link>
+            <Link to="/shop" onClick={closeMenu}>Shop</Link>
           </li>
 
           <li>
-            <Link to="/cart">Cart ({cartItems.length})</Link>
+            <Link to="/cart" onClick={closeMenu}>Cart ({cartItems.length})</Link>
           </li>
 
           {user ? (
             <>
               <li>
-                <Link to="/profile">Hi, {user.name}</Link>
+                <Link to="/profile" onClick={closeMenu}>Hi, {user.name}</Link>
               </li>
 
-              {user.role === "admin" && (
+              {user && (user.role?.toLowerCase() === "admin" || user.isAdmin) && (
                 <li>
-                  <Link to="/admin">Admin Dashboard</Link>
+                  <Link to="/admin" onClick={closeMenu}>Admin Dashboard</Link>
                 </li>
               )}
 
@@ -57,9 +73,14 @@ const Navbar = () => {
               </li>
             </>
           ) : (
-            <li>
-              <Link to="/login">Login</Link>
-            </li>
+            <>
+              <li>
+                <Link to="/login" onClick={closeMenu}>Login</Link>
+              </li>
+              <li>
+                <Link to="/register" onClick={closeMenu}>Register</Link>
+              </li>
+            </>
           )}
         </ul>
       </div>

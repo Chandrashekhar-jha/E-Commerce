@@ -6,7 +6,7 @@
   "scripts": {
     "install": "cd backend && npm install && cd ../frontend && npm install",
     "dev:server": "cd backend && npm run dev",
-    "dev:client": "cd frontend && set PORT=3002 && npm start",
+    "dev:client": "cd frontend && node start-client.js",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "build:server": "cd backend && npm run build",
     "build:client": "cd frontend && npm run build",

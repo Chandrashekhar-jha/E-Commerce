@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import '../styles/global.css';
+import '../styles/auth.css';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -20,19 +20,25 @@ const Login = () => {
                 body: JSON.stringify({ email, password })
             });
             const data = await res.json();
-            if (data.user) {
-                login(data.user);
+            if (res.ok && data.token) {
+                login(data);
                 navigate("/");
+            } else {
+                alert(data.message || "Invalid email or password");
             }
         } catch (error) {
             console.error("Error logging in:", error);
+            alert("An error occurred during login. Please try again.");
         }
     }
 
     return (
-        <div className="auth-container">
+        <div className="auth-container login-page">
             <form onSubmit={handleSubmit} className="auth-form">
-                <h2>Login</h2>
+                <div className="auth-header">
+                    <h2>Login</h2>
+                    <p>Welcome back — sign in to continue shopping.</p>
+                </div>
                 <input
                     type="email"
                     placeholder="Email"
@@ -46,6 +52,9 @@ const Login = () => {
                     onChange={(e) => setPassword(e.target.value)}
                 />
                 <button type="submit" className="btn">Login</button>
+                <p className="login-footer">
+                    Don’t have an account? <Link to="/register">Register</Link>
+                </p>
             </form>
         </div>
     );

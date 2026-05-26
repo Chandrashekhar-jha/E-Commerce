@@ -51,7 +51,8 @@ const createProduct = async (req, res) => {
             description,
             price,
             category,
-            image: imageUrl
+            imageUrl: imageUrl || 'https://via.placeholder.com/300x300.png?text=Product',
+            stock
         });
         await product.save();
         res.status(201).json(product);
@@ -81,12 +82,11 @@ const updateProduct = async (req, res) => {
             product.description = description || product.description;
             product.price = price || product.price;
             product.category = category || product.category;
-            product.image = imageUrl || product.image;
-            await product.save();
+            product.imageUrl = imageUrl || product.imageUrl;
             if (stock !== undefined) {
                 product.stock = stock;
-                await product.save();
             }
+            await product.save();
             res.json(product);
         } else {
             res.status(404).json({
@@ -106,7 +106,7 @@ const deleteProduct = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
         if (product) {
-            await product.remove();
+            await Product.findByIdAndDelete(req.params.id);
             res.json({
                 message: 'Product removed'
             });

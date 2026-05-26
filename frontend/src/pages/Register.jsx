@@ -1,5 +1,4 @@
-import React, {useState, useContext} from "react";
-import { AuthContext } from "../context/AuthContext";
+import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import '../styles/auth.css';
 
@@ -7,7 +6,6 @@ const Register = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const { register } = useContext(AuthContext);    
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -21,12 +19,15 @@ const Register = () => {
                 body: JSON.stringify({ name, email, password })
             });
             const data = await res.json();
-            if (data.user) {
+            if (res.ok && data.token) {
                 alert("Registration successful! Please login.");
                 navigate("/login");
+            } else {
+                alert(data.message || "Registration failed. Please check your details.");
             }
         } catch (error) {
             console.error("Error registering user:", error);
+            alert("An error occurred during registration. Please try again.");
         }
     }
 

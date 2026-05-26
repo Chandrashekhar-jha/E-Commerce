@@ -49,7 +49,7 @@ const myOrders = async (req, res) => {
 
     try {
         const orders = await Order.find({ user: req.user._id })
-            .populate('products.product', 'name price image')
+            .populate('products.product', 'name price imageUrl')
             .sort({ createdAt: -1 });
         
         res.status(200).json({
@@ -98,7 +98,7 @@ const getMyOrdersById = async (req, res) => {
                 _id: orderId,
                 user: req.user._id 
             })
-            .populate('products.product', 'name price image')
+            .populate('products.product', 'name price imageUrl')
             .populate('user', 'name email');
             
             if (!order) {
@@ -115,7 +115,7 @@ const getMyOrdersById = async (req, res) => {
         } else {
             // Get all orders for current user
             const orders = await Order.find({ user: req.user._id })
-                .populate('products.product', 'name price image')
+                .populate('products.product', 'name price imageUrl')
                 .sort({ createdAt: -1 });
             
             res.status(200).json({
@@ -185,10 +185,35 @@ const updateOrderStatus = async (req, res) => {
     }
 };
 
+const deleteOrder = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const order = await Order.findById(id);
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: 'Order not found'
+            });
+        }
+        await Order.findByIdAndDelete(id);
+        res.status(200).json({
+            success: true,
+            message: 'Order deleted successfully'
+        });
+    } catch (error) {
+        console.error('Error deleting order:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error deleting order'
+        });
+    }
+};
+
 module.exports = {
     createOrder,
     myOrders,
     getOrders,
     getMyOrdersById,
-    updateOrderStatus
+    updateOrderStatus,
+    deleteOrder
 };
