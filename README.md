@@ -1,5 +1,7 @@
 # ShopNest E-Commerce Platform 🛒✨
 
+**🟢 Live Preview:** [https://e-commerce-indol-omega-12.vercel.app/](https://e-commerce-indol-omega-12.vercel.app/)
+
 ShopNest is a premium, dark-themed, production-ready MERN (MongoDB, Express, React, Node.js) stack e-commerce application. It features a modern, responsive layout, administrative dashboard management, secure JWT authentication sessions, product image fallback handling, and integrated Razorpay checkout flows.
 
 ---
